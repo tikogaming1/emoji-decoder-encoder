@@ -3,7 +3,8 @@
 <div align="center">
 
 
-![Matrix Hacking](matrix-hacker.svg)
+<img src="matrix.svg" width="100%" alt="Matrix Glow Art">
+
 
               // STEGANOGRAPHY PROTOCOL v3.0  —  AES-256-GCM // PBKDF2 250k
                     ZERO-KNOWLEDGE  •  VARIATION SELECTORS  •  MATRIX
