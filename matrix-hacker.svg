@@ -1,32 +1,34 @@
-<svg xmlns="http://w3.org" viewBox="0 0 800 200" width="100%" height="100%">
-  <style>
-    .bg { fill: #050505; }
-    .matrix-text {
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 14px;
-      fill: #00ff33;
-      /* Der Glow-Effekt durch mehrschichtige Schatten */
-      text-shadow: 0 0 2px #00ff33, 0 0 8px #00ff33, 0 0 15px #00ff33;
-      font-weight: bold;
-    }
-  </style>
-  <rect width="100%" height="100%" class="bg" />
-  <!-- Jede Zeile deines ASCII-Arts kommt in ein <tspan> oder <text> -->
-  <text x="20" y="40" class="matrix-text" xml:space="preserve">
-    <tspan x="20" dy="0">  ███████╗███╗   ███╗  ██████╗        ██╗ ██╗       ██████╗██████╗  ██╗   ██╗ ██████╗  ████████╗ </tspan>
-    <tspan x="20" dy="18"> ██╔════╝████╗ ████║ ██╔═══██╗       ██║ ██║      ██╔════╝██╔══██╗ ╚██╗ ██╔╝ ██╔══██╗ ╚══██╔══╝ </tspan>
-    <tspan x="20" dy="18"> █████╗  ██╔████╔██║ ██║   ██║       ██║ ██║      ██║     ██████╔╝  ╚████╔╝  ██████╔╝    ██║    </tspan>
-    <tspan x="20" dy="18"> ██╔══╝  ██║╚██╔╝██║ ██║   ██║       ██║ ██║      ██║     ██╔══██╗   ╚██╔╝   ██╔═══╝     ██║    </tspan>
-    <tspan x="20" dy="18"> ███████╗██║ ╚═╝ ██║ ╚██████╔╝ ██    ██║ ██║      ╚██████╗██║  ██║    ██║    ██║         ██║    </tspan>
-    <tspan x="20" dy="18"> ╚══════╝╚═╝     ╚═╝  ╚═════╝   ╚█████╔╝ ╚═╝       ╚═════╝╚═╝  ╚═╝    ╚═╝    ╚═╝         ╚═╝    </tspan>
-    <tspan x="20" dy="18">                                  ╚═══╝                                                         </tspan>
-  </text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 145" width="820" height="145" role="img" aria-labelledby="title">
+  <title id="title">EMOJI_CRYPT Neon</title>
+  <defs>
+    <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2.2" result="blur"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0  0 1 0 0 0.35  0 0 0 0 0.12  0 0 0 0.9 0" result="glowColor"/>
+      <feMerge>
+        <feMergeNode in="glowColor"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="neon-strong" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.1" result="b2"/>
+      <feMerge>
+        <feMergeNode in="b1"/>
+        <feMergeNode in="b2"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="820" height="145" rx="6" fill="#030a04" stroke="#00ff41" stroke-opacity="0.9" stroke-width="1.1"/>
+  <rect x="6" y="6" width="808" height="133" rx="4" fill="none" stroke="#00ff41" stroke-opacity="0.12" stroke-width="0.8"/>
+  <!-- Matrix grid faint -->
+  <g opacity="0.06" stroke="#00ff41" stroke-width="0.5">
+    <path d="M 0 28 H 820 M 0 56 H 820 M 0 84 H 820 M 0 112 H 820"/>
+    <path d="M 28 0 V 145 M 56 0 V 145 M 84 0 V 145 M 112 0 V 145"/>
+  </g>
+  <text x="410" y="42" text-anchor="middle" font-family="'JetBrains Mono','Courier New',monospace" font-size="16.5" font-weight="700" fill="#00ff41" filter="url(#neon-strong)" letter-spacing="0.2"> ███████╗███╗   ███╗  ██████╗     ██╗ ██╗    ██████╗██████╗ ██╗   ██╗ ██████╗ ████████╗</text>
+  <text x="410" y="60" text-anchor="middle" font-family="'JetBrains Mono','Courier New',monospace" font-size="16.5" font-weight="700" fill="#00ff41" filter="url(#neon-strong)" letter-spacing="0.2">██╔════╝████╗ ████║ ██╔═══██╗    ██║ ██║   ██╔════╝██╔══██╗ ╚██╗██╔╝██╔══██╗╚══██╔══╝</text>
+  <text x="410" y="78" text-anchor="middle" font-family="'JetBrains Mono','Courier New',monospace" font-size="16.5" font-weight="700" fill="#eaffea" filter="url(#neon-glow)" letter-spacing="0.2">██║     ██████╔╝  ╚████╔╝ ██████╔╝   ██║     ███████╗██║  ██║  ██║   ██║        ██║</text>
+  <text x="410" y="106" text-anchor="middle" font-family="'JetBrains Mono','Courier New',monospace" font-size="10.5" fill="#7aff7a" letter-spacing="3.2" font-weight="600">// STEGANOGRAPHY PROTOCOL v3.0  —  AES-256-GCM // PBKDF2 250k</text>
+  <text x="410" y="123" text-anchor="middle" font-family="'JetBrains Mono','Courier New',monospace" font-size="8.5" fill="#00ff41" opacity="0.75" letter-spacing="2.8">ZERO-KNOWLEDGE  •  VARIATION SELECTORS  •  MATRIX</text>
 </svg>
-┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
-│  ███████╗███╗   ███╗  ██████╗        ██╗ ██╗       ██████╗██████╗  ██╗   ██╗ ██████╗  ████████╗ │
-│  ██╔════╝████╗ ████║ ██╔═══██╗       ██║ ██║      ██╔════╝██╔══██╗ ╚██╗ ██╔╝ ██╔══██╗ ╚══██╔══╝ │
-│  █████╗  ██╔████╔██║ ██║   ██║       ██║ ██║      ██║     ██████╔╝  ╚████╔╝  ██████╔╝    ██║    │
-│  ██╔══╝  ██║╚██╔╝██║ ██║   ██║       ██║ ██║      ██║     ██╔══██╗   ╚██╔╝   ██╔═══╝     ██║    │
-│  ███████╗██║ ╚═╝ ██║ ╚██████╔╝ ██    ██║ ██║      ╚██████╗██║  ██║    ██║    ██║         ██║    │
-│  ╚══════╝╚═╝     ╚═╝  ╚═════╝   ╚█████╔╝ ╚═╝       ╚═════╝╚═╝  ╚═╝    ╚═╝    ╚═╝         ╚═╝    │
-└─────────────────────────────────────────────────────────────────────────────────────────────────┘

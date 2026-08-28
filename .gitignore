@@ -18,12 +18,13 @@ yarn-error.log*
 
 # env files
 .env*
+!.env.example
 
-# vercel
+# vercel - komplettes Deployment ignoriert (nur App, kein Vercel)
 .vercel
+vercel.json
+.vercel/**
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-.vercel
-.env*

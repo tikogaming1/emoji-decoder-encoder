@@ -1,9 +1,8 @@
 import type { Metadata } from 'next'
-import { SpeedInsights } from '@vercel/speed-insights/next'
 import { MatrixFavicon } from '@/components/matrix-favicon'
 import './globals.css'
 
-const siteUrl = 'https://emoji-decoder-encoder.vercel.app'
+const siteUrl = 'http://localhost:3000'
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -64,9 +63,9 @@ export const metadata: Metadata = {
     description: 'Verstecke geheime Texte unsichtbar in Emojis — AES-256-GCM + PBKDF2 250k. Zero-Knowledge.',
     images: ['/og-image.png'],
   },
-  verification: {
-    google: '28WNHEaKMrLp3hGSwJEdmqAHlmfpdHCqWLVDDMoIXgE',
-  },
+  // verification: {
+  //   google: 'DEIN_GOOGLE_TOKEN_HIER',
+  // },
 }
 
 export default function RootLayout({
@@ -101,7 +100,6 @@ export default function RootLayout({
       </head>
       <body className="bg-[#030a04] text-[#a7ffb0] antialiased min-h-screen selection:bg-[#00ff41]/30 selection:text-[#eaffea] matrix-scrollbar">
         {children}
-        <SpeedInsights />
         <MatrixFavicon />
       </body>
     </html>
