@@ -60,14 +60,13 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'EMOJI_CRYPT // MATRIX EDITION — AES-256-GCM',
+    title: 'EMOJI_CRYPT // AES-256-GCM',
     description: 'Verstecke geheime Texte unsichtbar in Emojis — AES-256-GCM + PBKDF2 250k. Zero-Knowledge.',
     images: ['/og-image.png'],
   },
-  // Für Google Search Console Verification — hier Token eintragen nach Anleitung unten
-  // verification: {
-  //   google: 'DEIN_GOOGLE_VERIFICATION_TOKEN',
-  // },
+  verification: {
+    google: '28WNHEaKMrLp3hGSwJEdmqAHlmfpdHCqWLVDDMoIXgE',
+  },
 }
 
 export default function RootLayout({
