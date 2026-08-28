@@ -75,12 +75,12 @@
 
 | Merkmal | Original `paulgb/emoji-encoder` | **EMOJI_CRYPT Neu** |
 | :--- | :--- | :--- |
-| Verschlüsselung | ❌ Klartext UTF-8 | ✅ **AES-256-GCM 256-Bit AEAD** (`app/encoding.ts:199`) |
+| Verschlüsselung | ❌ Klartext UTF-8 | ✅ **AES-256-GCM 256-Bit AEAD** |
 | Schlüsselschutz | ❌ Jeder liest | ✅ **Zero-Knowledge** (Passwort / Vault-Key) |
 | KI-Sicherheit   | ❌ KI liest sofort | ✅ **Mathematisch unknackbar** |
-| Längen-Leak     | ❌ Byte-Zahl sichtbar | ✅ **Random Padding 64B** (`app/encoding.ts:100`) |
+| Längen-Leak     | ❌ Byte-Zahl sichtbar | ✅ **Random Padding 64B** |
 | Manipulation    | ❌ Datenmüll | ✅ **GCM 128-Bit Auth Tag** |
-| Emoji-Crash     | ❌ Kollidiert bei ❤️ | ✅ **Magic-Header Scan** `0xEE 0x03` (`app/encoding.ts:275`) |
+| Emoji-Crash     | ❌ Kollidiert bei ❤️ | ✅ **Magic-Header Scan** |
 
 ---
 
@@ -90,12 +90,12 @@
 > `ENCRYPT` → Text + Passwort → `COPY_EMOJI` → Empfänger `DECRYPT` + selbes Passwort. Fremde sehen nur `🔑 needs_password`.
 
 **2. Privater Vault-Key (Team):**
-> `VAULT` Tab → Key in `localStorage:emoji_private_vault_key` (`app/encoder-decoder-content.tsx:77`) — **nur lokal**, nie über Netzwerk.
+> `VAULT` Tab → Key in `localStorage` — **nur lokal**, nie über Netzwerk. **Hinweis:** `localStorage` ist bei XSS angreifbar — nur auf vertrauenswürdigen Geräten nutzen und keinen Browser mit unbekannten Extensions verwenden. Für höchste Sicherheit Passwort pro Nachricht bevorzugen.
 
 ```ts
-// PSK Flow
-Alice: encode("Treffpunkt 23h", {password:"s3cr3t!"}) → 🔒󠇞...
-Bob  : decode("🔒󠇞...", {password:"s3cr3t!"}) → "Treffpunkt 23h"
+// PSK Flow — Beispiel mit starkem Passwort
+Alice: encode("Treffpunkt 23h", {password:"Tr0ub4dor&3!Xk9#qL2"}) → 🔒󠇞...
+Bob  : decode("🔒󠇞...", {password:"Tr0ub4dor&3!Xk9#qL2"}) → "Treffpunkt 23h"
 ```
 
 ---
@@ -132,12 +132,12 @@ npx tsc --noEmit
 ## 🖥️ _CLI — ohne Browser_
 
 ```bash
-# encode
-node scripts/emoji-crypt.mjs encode "Streng vertraulich" --password meinPasswort123 --emoji 🔒
+# encode — nutze starkes Passwort (≥16 Zeichen, gemischt)
+node scripts/emoji-crypt.mjs encode "Streng vertraulich" --password 'Tr0ub4dor&3!Xk9#qL2' --emoji 🔒
 # → ✅ Verschlüsselt: 🔒󠇞󠇰...
 
-# decode
-node scripts/emoji-crypt.mjs decode "🔒󠇞󠇰..." --password meinPasswort123
+# decode — gleiches Passwort beim Empfänger
+node scripts/emoji-crypt.mjs decode "🔒󠇞󠇰..." --password 'Tr0ub4dor&3!Xk9#qL2'
 # → 🔓 Streng vertraulich
 ```
 
@@ -174,17 +174,16 @@ components/
 ## 🔬 _Krypto Deep Dive_
 
 ```ts
-// app/encoding.ts:190
+// Vereinfacht — Details in app/encoding.ts
 salt = crypto.getRandomValues(16) // 16B
 iv   = crypto.getRandomValues(12) // 12B NIST
-key  = await deriveKey(passphrase, salt, 250000) // PBKDF2 SHA-256
-padded = padPlaintext(text) // [len MSB, len LSB, ...text, ...random] → 64B
-cipher = await subtle.encrypt({name:"AES-GCM", iv}, key, padded) // +16B Tag
-payload = [0xEE, 0x03, 0x02, salt(16), iv(12), cipher...] → VS-Encode
-// VS: U+FE00..FE0F (0x00-0x0F) + U+E0100..E01EF (0x10-0xFF) → 1 Byte/Char
+key  = deriveKey(passphrase, salt, 250000) // PBKDF2 SHA-256
+padded = padPlaintext(text) // 64B-Blöcke mit Zufalls-Padding
+cipher = AES-GCM-Encrypt(key, iv, padded) // + Auth Tag
+payload = [header, salt, iv, cipher] → Variation Selectors
 ```
 
-**Entropie:** `calculatePasswordEntropy` (`app/encoding.ts:430`) → Bit + Crack-Time.
+**Entropie:** Passwort-Stärke wird live in Bits + Crack-Time angezeigt. **Tipp:** ≥16 Zeichen, gemischt (Groß/Klein/Zahl/Sonderzeichen) → `Sehr stark`.
 
 ---
 
