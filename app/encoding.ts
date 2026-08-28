@@ -1,21 +1,24 @@
-// Unicode Variation Selectors mapping
-// VS1..=VS16 (Unicode U+FE00 .. U+FE0F) -> 16 byte values (0x00 .. 0x0F)
+// Unicode Variation Selectors mapping (Legacy — nur für Decode alter Emojis)
 export const VARIATION_SELECTOR_START = 0xfe00;
 export const VARIATION_SELECTOR_END = 0xfe0f;
-
-// Variation Selectors Supplement (Unicode U+E0100 .. U+E01EF) -> 240 byte values (0x10 .. 0xFF)
 export const VARIATION_SELECTOR_SUPPLEMENT_START = 0xe0100;
 export const VARIATION_SELECTOR_SUPPLEMENT_END = 0xe01ef;
 
+// Zero-Width steganography (WhatsApp-sicher, primär)
+// U+200B ZWSP = 00, U+200C ZWNJ = 01, U+200D ZWJ = 10, U+2060 WORD JOINER = 11
+export const ZWSP = 0x200b;
+export const ZWNJ = 0x200c;
+export const ZWJ = 0x200d;
+export const WJ = 0x2060;
+export const ZERO_WIDTH_CHARS = [ZWSP, ZWNJ, ZWJ, WJ] as const;
+
 // Magic Header bytes to identify encrypted payloads
-export const MAGIC_0 = 0xee; // Emoji Encoder
+export const MAGIC_0 = 0xee;
 export const MAGIC_V2 = 0x02; // Version 2 (Unpadded AES-256-GCM)
 export const MAGIC_V3 = 0x03; // Version 3 (Padded AES-256-GCM, prevents length leakage)
 
-// Encryption modes
-export const MODE_KEY = 0x02; // Authenticated AES-256-GCM with User Password or Private Vault Key
+export const MODE_KEY = 0x02;
 
-// Number of PBKDF2 iterations for key derivation
 export const PBKDF2_ITERATIONS = 250000;
 
 export function toVariationSelector(byte: number): string | null {
@@ -41,6 +44,28 @@ export function fromVariationSelector(codePoint: number): number | null {
   }
 }
 
+// Zero-Width helpers (2 Bit pro Char, 4 Chars = 1 Byte)
+export function byteToZeroWidth(byte: number): string {
+  let s = "";
+  for (let i = 3; i >= 0; i--) {
+    const bits = (byte >> (i * 2)) & 0x03;
+    s += String.fromCodePoint(ZERO_WIDTH_CHARS[bits]);
+  }
+  return s;
+}
+
+export function zeroWidthValue(codePoint: number): number | null {
+  if (codePoint === ZWSP) return 0;
+  if (codePoint === ZWNJ) return 1;
+  if (codePoint === ZWJ) return 2;
+  if (codePoint === WJ) return 3;
+  return null;
+}
+
+export function isZeroWidth(codePoint: number): boolean {
+  return zeroWidthValue(codePoint) !== null;
+}
+
 function getCryptoSubtle(): SubtleCrypto {
   if (typeof window !== "undefined" && window.crypto && window.crypto.subtle) {
     return window.crypto.subtle;
@@ -61,9 +86,6 @@ function getRandomValues(array: Uint8Array): Uint8Array {
   throw new Error("Web Crypto getRandomValues is not available.");
 }
 
-/**
- * Derives a 256-bit AES-GCM key from a passphrase and salt using PBKDF2 with 250,000 iterations.
- */
 export async function deriveKey(
   passphrase: string,
   salt: Uint8Array,
@@ -93,15 +115,10 @@ export async function deriveKey(
   );
 }
 
-/**
- * Pads plaintext to a multiple of 64 bytes with random bytes to prevent length leakage (Traffic Analysis).
- * Format: [Length MSB, Length LSB, ...plaintextBytes, ...randomPaddingBytes]
- */
 function padPlaintext(text: string): Uint8Array {
   const plainBytes = new TextEncoder().encode(text);
   const len = plainBytes.length;
   const unpaddedLen = 2 + len;
-  // Pad to multiple of 64 bytes (minimum 64 bytes)
   const targetLen = Math.ceil(Math.max(unpaddedLen, 64) / 64) * 64;
   const padded = new Uint8Array(targetLen);
 
@@ -167,8 +184,8 @@ export type DecryptResult =
   | DecryptError;
 
 /**
- * Encrypts `text` using AES-256-GCM with random padding, and embeds the ciphertext into variation selectors
- * appended to `carrier` emoji/character.
+ * Encrypts `text` using AES-256-GCM and embeds via Zero-Width chars (WhatsApp-sicher).
+ * Fallback für alte VS-Emojis bleibt beim Decoden erhalten.
  */
 export async function encode(
   carrier: string,
@@ -186,14 +203,11 @@ export async function encode(
 
   const subtle = getCryptoSubtle();
 
-  // Generate cryptographically random 16-byte salt and 12-byte IV (NIST GCM standard)
   const salt = getRandomValues(new Uint8Array(16));
   const iv = getRandomValues(new Uint8Array(12));
 
-  // Derive AES-256 key with 250,000 PBKDF2 rounds
   const aesKey = await deriveKey(effectiveKey, salt);
 
-  // Cryptographic random padding to hide message length
   const paddedPlaintext = padPlaintext(text);
 
   const cipherBuffer = await subtle.encrypt(
@@ -203,13 +217,6 @@ export async function encode(
   );
   const cipherBytes = new Uint8Array(cipherBuffer);
 
-  // Payload structure (Version 3):
-  // [0] Magic 0 (0xEE)
-  // [1] Magic 1 (0x03 = Padded AES-256-GCM)
-  // [2] Mode (0x02 = Authenticated Key)
-  // [3..18] Salt (16 bytes)
-  // [19..30] IV (12 bytes)
-  // [31..] Ciphertext + 16-byte Auth Tag
   const totalLength = 3 + 16 + 12 + cipherBytes.length;
   const payload = new Uint8Array(totalLength);
   payload[0] = MAGIC_0;
@@ -219,13 +226,10 @@ export async function encode(
   payload.set(iv, 19);
   payload.set(cipherBytes, 31);
 
-  // Convert payload bytes to Unicode Variation Selectors
+  // Zero-Width Steganographie (4 Chars pro Byte)
   let encoded = carrier;
   for (let i = 0; i < payload.length; i++) {
-    const vs = toVariationSelector(payload[i]);
-    if (vs !== null) {
-      encoded += vs;
-    }
+    encoded += byteToZeroWidth(payload[i]);
   }
 
   return encoded;
@@ -236,11 +240,50 @@ export interface DecodeOptions {
   vaultKey?: string;
 }
 
-/**
- * Extracts variation selectors from `input`, checks for encryption headers,
- * and decrypts the ciphertext using AES-256-GCM.
- * Supports Version 3 (Padded), Version 2 (Unpadded), and Version 1 (Legacy unencrypted fallback).
- */
+// Helper: extrahiere Zero-Width Bytes
+function extractZeroWidth(input: string): { bytes: number[]; carrierChars: string[]; zwCharCount: number; chars: string[] } {
+  const chars = Array.from(input);
+  const carrierChars: string[] = [];
+  const zwValues: number[] = [];
+  let zwCharCount = 0;
+  for (const char of chars) {
+    const cp = char.codePointAt(0);
+    if (cp !== undefined) {
+      const v = zeroWidthValue(cp);
+      if (v !== null) {
+        zwValues.push(v);
+        zwCharCount++;
+      } else {
+        carrierChars.push(char);
+      }
+    }
+  }
+  const bytes: number[] = [];
+  for (let i = 0; i + 3 < zwValues.length; i += 4) {
+    const b = (zwValues[i] << 6) | (zwValues[i + 1] << 4) | (zwValues[i + 2] << 2) | zwValues[i + 3];
+    bytes.push(b);
+  }
+  return { bytes, carrierChars, zwCharCount, chars };
+}
+
+function extractVariationSelector(input: string): { bytes: number[]; carrierChars: string[]; chars: string[] } {
+  const chars = Array.from(input);
+  const carrierChars: string[] = [];
+  const bytes: number[] = [];
+  for (const char of chars) {
+    const cp = char.codePointAt(0);
+    if (cp !== undefined) {
+      const b = fromVariationSelector(cp);
+      if (b !== null) {
+        bytes.push(b);
+      } else {
+        carrierChars.push(char);
+      }
+    }
+  }
+  return { bytes, carrierChars, chars };
+}
+
 export async function decode(
   input: string,
   options: DecodeOptions = {}
@@ -249,18 +292,52 @@ export async function decode(
     return { status: "error", error: "Bitte ein Emoji oder Text eingeben." };
   }
 
-  const chars = Array.from(input);
-  const carrierChars: string[] = [];
-  const extractedBytes: number[] = [];
+  // 1. Versuche Zero-Width (primär, WhatsApp-sicher)
+  const zw = extractZeroWidth(input);
+  let extractedBytes = zw.bytes;
+  let carrierChars = zw.carrierChars;
+  let chars = zw.chars;
+  let isZW = zw.bytes.length > 0;
+  let zwCharCount = zw.zwCharCount;
 
-  for (const char of chars) {
-    const cp = char.codePointAt(0);
-    if (cp !== undefined) {
-      const b = fromVariationSelector(cp);
-      if (b !== null) {
-        extractedBytes.push(b);
-      } else {
-        carrierChars.push(char);
+  // 2. Falls kein ZW oder kein Magic in ZW, fallback auf Variation Selectors (Legacy)
+  let magicIndex = -1;
+  let version = 1;
+  const findMagic = (bytes: number[]) => {
+    for (let i = 0; i <= bytes.length - 2; i++) {
+      if (bytes[i] === MAGIC_0) {
+        if (bytes[i + 1] === MAGIC_V3) return { idx: i, ver: 3 };
+        if (bytes[i + 1] === MAGIC_V2) return { idx: i, ver: 2 };
+      }
+    }
+    return null;
+  };
+
+  let magic = findMagic(extractedBytes);
+  if (magic) {
+    magicIndex = magic.idx;
+    version = magic.ver;
+  } else {
+    // kein Magic in ZW → probiere VS
+    const vs = extractVariationSelector(input);
+    if (vs.bytes.length > 0) {
+      const vsMagic = findMagic(vs.bytes);
+      if (vsMagic) {
+        extractedBytes = vs.bytes;
+        carrierChars = vs.carrierChars;
+        chars = vs.chars;
+        magicIndex = vsMagic.idx;
+        version = vsMagic.ver;
+        isZW = false;
+      } else if (vs.bytes.length > extractedBytes.length) {
+        // kein Magic, aber VS hat mehr Bytes → Legacy Fallback braucht VS Bytes
+        // behalte ZW für Fehlerfall? Für Legacy nehmen wir VS wenn ZW leer war
+        if (zw.bytes.length === 0) {
+          extractedBytes = vs.bytes;
+          carrierChars = vs.carrierChars;
+          chars = vs.chars;
+          isZW = false;
+        }
       }
     }
   }
@@ -272,52 +349,57 @@ export async function decode(
     };
   }
 
-  // Scan for magic sequence [0xEE, 0x02] (V2) or [0xEE, 0x03] (V3)
-  let magicIndex = -1;
-  let version = 1;
-  for (let i = 0; i <= extractedBytes.length - 2; i++) {
-    if (extractedBytes[i] === MAGIC_0) {
-      if (extractedBytes[i + 1] === MAGIC_V3) {
-        magicIndex = i;
-        version = 3;
-        break;
-      } else if (extractedBytes[i + 1] === MAGIC_V2) {
-        magicIndex = i;
-        version = 2;
-        break;
-      }
-    }
-  }
-
-  // Determine accurate carrier emoji right before the magic variation selector sequence
   const carrierEmoji = (() => {
     if (magicIndex !== -1) {
-      let currentVsCount = 0;
-      let magicCharIdx = -1;
-      for (let i = 0; i < chars.length; i++) {
-        const cp = chars[i].codePointAt(0);
-        if (cp !== undefined && fromVariationSelector(cp) !== null) {
-          if (currentVsCount === magicIndex) {
-            magicCharIdx = i;
-            break;
+      if (isZW) {
+        // ZW: jedes Byte = 4 ZW-Chars, Magic bei Byte-Index *4
+        let zwCount = 0;
+        let magicCharIdx = -1;
+        for (let i = 0; i < chars.length; i++) {
+          const cp = chars[i].codePointAt(0);
+          if (cp !== undefined && isZeroWidth(cp)) {
+            if (Math.floor(zwCount / 4) === magicIndex && zwCount % 4 === 0) {
+              magicCharIdx = i;
+              break;
+            }
+            zwCount++;
           }
-          currentVsCount++;
         }
-      }
+        if (magicCharIdx > 0) {
+          let carrierStart = magicCharIdx - 1;
+          if (carrierStart > 0 && chars[carrierStart].codePointAt(0) === 0xfe0f) {
+            carrierStart--;
+          }
+          const detected = chars.slice(carrierStart, magicCharIdx).join("");
+          if (detected.trim().length > 0) return detected;
+        }
+      } else {
+        let currentVsCount = 0;
+        let magicCharIdx = -1;
+        for (let i = 0; i < chars.length; i++) {
+          const cp = chars[i].codePointAt(0);
+          if (cp !== undefined && fromVariationSelector(cp) !== null) {
+            if (currentVsCount === magicIndex) {
+              magicCharIdx = i;
+              break;
+            }
+            currentVsCount++;
+          }
+        }
 
-      if (magicCharIdx > 0) {
-        let carrierStart = magicCharIdx - 1;
-        if (carrierStart > 0 && chars[carrierStart].codePointAt(0) === 0xfe0f) {
-          carrierStart--;
+        if (magicCharIdx > 0) {
+          let carrierStart = magicCharIdx - 1;
+          if (carrierStart > 0 && chars[carrierStart].codePointAt(0) === 0xfe0f) {
+            carrierStart--;
+          }
+          const detected = chars.slice(carrierStart, magicCharIdx).join("");
+          if (detected.trim().length > 0) return detected;
         }
-        const detected = chars.slice(carrierStart, magicCharIdx).join("");
-        if (detected.trim().length > 0) return detected;
       }
     }
     return carrierChars.join("").trim() || "🔒";
   })();
 
-  // If no magic header is found, attempt legacy unencrypted fallback (original emoji-encoder format)
   if (magicIndex === -1) {
     try {
       const legacyBytes = new Uint8Array(extractedBytes);
@@ -344,7 +426,6 @@ export async function decode(
 
   const payload = new Uint8Array(extractedBytes.slice(magicIndex));
 
-  // Minimum size: 3 (header) + 16 (salt) + 12 (iv) + 16 (auth tag) = 47 bytes
   if (payload.length < 47) {
     return {
       status: "error",
@@ -363,7 +444,6 @@ export async function decode(
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 
-  // Candidate keys: explicit password first, then locally stored vaultKey
   const candidateKeys: { key: string; mode: "password" | "vault_key" }[] = [];
   if (options.password && options.password.trim().length > 0) {
     candidateKeys.push({ key: options.password.trim(), mode: "password" });
@@ -424,9 +504,6 @@ export async function decode(
   };
 }
 
-/**
- * Calculates Password Entropy in Bits.
- */
 export function calculatePasswordEntropy(password: string): {
   entropyBits: number;
   strengthLabel: "Sehr schwach" | "Schwach" | "Mittel" | "Stark" | "Sehr stark";
@@ -467,9 +544,6 @@ export function calculatePasswordEntropy(password: string): {
   return { entropyBits: Math.round(entropy), strengthLabel, crackTimeEstimate };
 }
 
-/**
- * Inspection helper for the AI-Proof Security Inspector
- */
 export interface InspectionData {
   carrier: string;
   totalLength: number;
@@ -486,15 +560,66 @@ export function inspectEmojiString(input: string): InspectionData {
   const chars = Array.from(input || "");
   const carrierChars: string[] = [];
   const bytes: number[] = [];
+  let isZWMode = false;
 
+  // Erst ZW versuchen
+  const zwVals: number[] = [];
+  let hasZW = false;
   for (const c of chars) {
     const cp = c.codePointAt(0);
     if (cp !== undefined) {
-      const b = fromVariationSelector(cp);
-      if (b !== null) {
-        bytes.push(b);
-      } else {
+      const v = zeroWidthValue(cp);
+      if (v !== null) {
+        hasZW = true;
+        zwVals.push(v);
+      } else if (fromVariationSelector(cp) === null) {
+        // nur wenn weder ZW noch VS -> Carrier
+        // aber für VS-Erkennung brauchen wir separate Prüfung
+      }
+    }
+  }
+  if (hasZW) {
+    for (let i = 0; i + 3 < zwVals.length; i += 4) {
+      const b = (zwVals[i] << 6) | (zwVals[i + 1] << 4) | (zwVals[i + 2] << 2) | zwVals[i + 3];
+      bytes.push(b);
+    }
+    // Carrier sind alle Nicht-ZW
+    for (const c of chars) {
+      const cp = c.codePointAt(0);
+      if (cp !== undefined && zeroWidthValue(cp) === null && fromVariationSelector(cp) === null) {
+        // aber VS-Teile eines Carriers wie ❤️ (FE0F) sollen nicht als hidden zählen
+        // ZW hat keine Kollision, also einfach alle Nicht-ZW als Carrier
+        // Für korrekten Carrier bei ZW: nimm alle Nicht-ZW
+        if (zeroWidthValue(cp) === null) {
+          // check if it's VS part of carrier - should stay carrier
+          carrierChars.push(c);
+          // actually we double push? fix: we already filter ZW only
+        }
+      }
+    }
+    // simpler: carrier = alle Zeichen die kein ZW sind, aber ZW-Check oben hat schon hasZW, also für isZW mode carrier = non-ZW
+    // Reset and correctly fill:
+    carrierChars.length = 0;
+    for (const c of chars) {
+      const cp = c.codePointAt(0);
+      if (cp !== undefined && zeroWidthValue(cp) === null) {
+        // VS-Teile bleiben beim Carrier (z.B. ❤️)
         carrierChars.push(c);
+      }
+    }
+    isZWMode = true;
+  }
+
+  if (!hasZW) {
+    for (const c of chars) {
+      const cp = c.codePointAt(0);
+      if (cp !== undefined) {
+        const b = fromVariationSelector(cp);
+        if (b !== null) {
+          bytes.push(b);
+        } else {
+          carrierChars.push(c);
+        }
       }
     }
   }
@@ -511,12 +636,11 @@ export function inspectEmojiString(input: string): InspectionData {
       shannonEntropy: 0,
       byteCount: 0,
       sampleHex: "Keine versteckten Bytes vorhanden",
-      summaryForAi: "Keine versteckten Variation Selectors gefunden.",
+      summaryForAi: "Keine versteckten Zeichen gefunden.",
       isPadded: false,
     };
   }
 
-  // Calculate Shannon entropy
   const freq = new Array(256).fill(0);
   for (const b of bytes) freq[b]++;
   let entropy = 0;
@@ -527,7 +651,6 @@ export function inspectEmojiString(input: string): InspectionData {
     }
   }
 
-  // Check magic bytes
   let magicIndex = -1;
   let isV3 = false;
   for (let i = 0; i <= bytes.length - 2; i++) {
@@ -553,7 +676,7 @@ export function inspectEmojiString(input: string): InspectionData {
   if (isEncrypted) {
     summaryForAi = `🔒 KRYPTOGRAPHISCH GESICHERT (AES-256-GCM, PBKDF2 250k Runden${
       isV3 ? ", Längen-Padding aktiv" : ""
-    }). Die Rohdaten besitzen eine Entropie von ${entropy.toFixed(
+    }, ${isZWMode ? "Zero-Width WhatsApp-sicher" : "Legacy VS"}). Die Rohdaten besitzen eine Entropie von ${entropy.toFixed(
       2
     )}/8.0 Bit (hohes pseudozufälliges Rauschen). Für jede KI mathematisch unlösbar ohne den geheimen Schlüssel.`;
   } else {

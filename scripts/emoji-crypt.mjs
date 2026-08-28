@@ -4,6 +4,7 @@
  * Pure Vanilla Node.js CLI for Emoji Encryption & Decryption (No dependencies needed!)
  * Uses Node's built-in crypto.subtle (AES-256-GCM + PBKDF2 250k + Random Padding)
  * Zero-Knowledge: Requires a password or vault key.
+ * Steganographie: Zero-Width (WhatsApp-sicher, 4 Chars/Byte) — Legacy VS wird noch gelesen
  *
  * Usage:
  *   node scripts/emoji-crypt.mjs encode "Mein Geheimnis" --password meinPasswort [--emoji 🔒]
@@ -17,6 +18,12 @@ const VARIATION_SELECTOR_START = 0xfe00;
 const VARIATION_SELECTOR_END = 0xfe0f;
 const VARIATION_SELECTOR_SUPPLEMENT_START = 0xe0100;
 const VARIATION_SELECTOR_SUPPLEMENT_END = 0xe01ef;
+
+const ZWSP = 0x200b;
+const ZWNJ = 0x200c;
+const ZWJ = 0x200d;
+const WJ = 0x2060;
+const ZERO_WIDTH_CHARS = [ZWSP, ZWNJ, ZWJ, WJ];
 
 const MAGIC_0 = 0xee;
 const MAGIC_V2 = 0x02;
@@ -43,6 +50,26 @@ function fromVariationSelector(codePoint) {
     return codePoint - VARIATION_SELECTOR_SUPPLEMENT_START + 16;
   }
   return null;
+}
+
+function byteToZeroWidth(byte) {
+  let s = "";
+  for (let i = 3; i >= 0; i--) {
+    const bits = (byte >> (i * 2)) & 0x03;
+    s += String.fromCodePoint(ZERO_WIDTH_CHARS[bits]);
+  }
+  return s;
+}
+
+function zeroWidthValue(cp) {
+  if (cp === ZWSP) return 0;
+  if (cp === ZWNJ) return 1;
+  if (cp === ZWJ) return 2;
+  if (cp === WJ) return 3;
+  return null;
+}
+function isZeroWidth(cp) {
+  return zeroWidthValue(cp) !== null;
 }
 
 async function deriveAesKey(passphrase, salt) {
@@ -122,25 +149,80 @@ export async function encode(carrier, plaintext, options = {}) {
 
   let result = carrier;
   for (let i = 0; i < payload.length; i++) {
-    const vs = toVariationSelector(payload[i]);
-    if (vs) result += vs;
+    result += byteToZeroWidth(payload[i]);
   }
   return result;
 }
 
-export async function decode(input, options = {}) {
-  const chars = Array.from(input || "");
-  const extractedBytes = [];
+function extractZW(input) {
+  const chars = Array.from(input);
   const carrierChars = [];
-
+  const vals = [];
+  let zwCount = 0;
   for (const c of chars) {
     const cp = c.codePointAt(0);
-    if (cp !== undefined) {
-      const b = fromVariationSelector(cp);
-      if (b !== null) {
-        extractedBytes.push(b);
-      } else {
-        carrierChars.push(c);
+    const v = zeroWidthValue(cp);
+    if (v !== null) {
+      vals.push(v);
+      zwCount++;
+    } else {
+      carrierChars.push(c);
+    }
+  }
+  const bytes = [];
+  for (let i = 0; i + 3 < vals.length; i += 4) {
+    bytes.push((vals[i] << 6) | (vals[i + 1] << 4) | (vals[i + 2] << 2) | vals[i + 3]);
+  }
+  return { bytes, carrierChars, zwCount, chars };
+}
+function extractVS(input) {
+  const chars = Array.from(input);
+  const carrierChars = [];
+  const bytes = [];
+  for (const c of chars) {
+    const cp = c.codePointAt(0);
+    const b = fromVariationSelector(cp);
+    if (b !== null) bytes.push(b);
+    else carrierChars.push(c);
+  }
+  return { bytes, carrierChars, chars };
+}
+
+export async function decode(input, options = {}) {
+  const charsAll = Array.from(input || "");
+  let zw = extractZW(input);
+  let extractedBytes = zw.bytes;
+  let carrierChars = zw.carrierChars;
+  let chars = zw.chars;
+  let isZW = zw.bytes.length > 0;
+  const findMagic = (bytes) => {
+    for (let i = 0; i <= bytes.length - 2; i++) {
+      if (bytes[i] === MAGIC_0) {
+        if (bytes[i + 1] === MAGIC_V3) return { idx: i, ver: 3 };
+        if (bytes[i + 1] === MAGIC_V2) return { idx: i, ver: 2 };
+      }
+    }
+    return null;
+  };
+  let m = extractedBytes.length ? findMagic(extractedBytes) : null;
+  let magicIndex = m ? m.idx : -1;
+  let version = m ? m.ver : 1;
+  if (magicIndex === -1) {
+    const vs = extractVS(input);
+    if (vs.bytes.length) {
+      const vm = findMagic(vs.bytes);
+      if (vm) {
+        extractedBytes = vs.bytes;
+        carrierChars = vs.carrierChars;
+        chars = vs.chars;
+        magicIndex = vm.idx;
+        version = vm.ver;
+        isZW = false;
+      } else if (zw.bytes.length === 0) {
+        extractedBytes = vs.bytes;
+        carrierChars = vs.carrierChars;
+        chars = vs.chars;
+        isZW = false;
       }
     }
   }
@@ -149,44 +231,45 @@ export async function decode(input, options = {}) {
     return { success: false, error: "Keine versteckten Zeichen gefunden." };
   }
 
-  let magicIndex = -1;
-  let version = 1;
-  for (let i = 0; i <= extractedBytes.length - 2; i++) {
-    if (extractedBytes[i] === MAGIC_0) {
-      if (extractedBytes[i + 1] === MAGIC_V3) {
-        magicIndex = i;
-        version = 3;
-        break;
-      } else if (extractedBytes[i + 1] === MAGIC_V2) {
-        magicIndex = i;
-        version = 2;
-        break;
-      }
-    }
-  }
-
   const carrierEmoji = (() => {
     if (magicIndex !== -1) {
-      let currentVsCount = 0;
-      let magicCharIdx = -1;
-      for (let i = 0; i < chars.length; i++) {
-        const cp = chars[i].codePointAt(0);
-        if (cp !== undefined && fromVariationSelector(cp) !== null) {
-          if (currentVsCount === magicIndex) {
-            magicCharIdx = i;
-            break;
+      if (isZW) {
+        let zc = 0;
+        let idx = -1;
+        for (let i = 0; i < chars.length; i++) {
+          const v = zeroWidthValue(chars[i].codePointAt(0));
+          if (v !== null) {
+            if (Math.floor(zc / 4) === magicIndex && zc % 4 === 0) {
+              idx = i;
+              break;
+            }
+            zc++;
           }
-          currentVsCount++;
         }
-      }
-
-      if (magicCharIdx > 0) {
-        let carrierStart = magicCharIdx - 1;
-        if (carrierStart > 0 && chars[carrierStart].codePointAt(0) === 0xfe0f) {
-          carrierStart--;
+        if (idx > 0) {
+          let s = idx - 1;
+          if (s > 0 && chars[s].codePointAt(0) === 0xfe0f) s--;
+          const d = chars.slice(s, idx).join("");
+          if (d.trim()) return d;
         }
-        const detected = chars.slice(carrierStart, magicCharIdx).join("");
-        if (detected.trim().length > 0) return detected;
+      } else {
+        let cur = 0;
+        let idx = -1;
+        for (let i = 0; i < chars.length; i++) {
+          if (fromVariationSelector(chars[i].codePointAt(0)) !== null) {
+            if (cur === magicIndex) {
+              idx = i;
+              break;
+            }
+            cur++;
+          }
+        }
+        if (idx > 0) {
+          let s = idx - 1;
+          if (s > 0 && chars[s].codePointAt(0) === 0xfe0f) s--;
+          const d = chars.slice(s, idx).join("");
+          if (d.trim()) return d;
+        }
       }
     }
     return carrierChars.join("").trim() || "🔒";
@@ -274,8 +357,9 @@ if (command) {
       }
       try {
         const enc = await encode(emoji, inputParam, { password });
-        console.log("\n✅ Verschlüsselt:");
+        console.log("\n✅ Verschlüsselt (Zero-Width, WhatsApp-sicher):");
         console.log(enc);
+        console.log(`\nLänge: ${Array.from(enc).length} Codepoints (${enc.length - Array.from(emoji).length} unsichtbar)`);
       } catch (err) {
         console.error("Fehler:", err.message);
       }

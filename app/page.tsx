@@ -73,7 +73,7 @@ export default function EncoderDecoder() {
             </CardTitle>
 
             <CardDescription className="text-[#7ad68a] font-mono text-[11px] sm:text-xs max-w-lg mx-auto leading-relaxed mt-2">
-              <span className="text-[#00ff41]">&gt;</span> Verstecke Payloads unsichtbar in Emojis. Variation Selectors + Random Padding.
+              <span className="text-[#00ff41]">&gt;</span> Verstecke Payloads unsichtbar in Emojis. Zero-Width + Random Padding.
               <br className="hidden sm:block" />
               <span className="opacity-70"> Für Menschen unsichtbar. Für KI unknackbar ohne Schlüssel.</span>
             </CardDescription>
@@ -115,7 +115,7 @@ export default function EncoderDecoder() {
             <span className="w-1 h-3 bg-[#00ff41] shadow-[0_0_6px_#00ff41]" /> AES-256-GCM + PBKDF2 250,000
           </span>
           <span className="text-[#00ff41]/40">|</span>
-          <span className="font-bold text-[#00ff41] matrix-glow">VS STEGANO</span>
+          <span className="font-bold text-[#00ff41] matrix-glow">ZW STEGANO</span>
           <span className="text-[#00ff41]/50">|</span>
           <span className="font-bold text-[#00ff41] matrix-glow">PADDING 64B</span>
           <span className="text-[#00ff41]/40 hidden sm:inline">|</span>

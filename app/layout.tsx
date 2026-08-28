@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     template: '%s | EMOJI_CRYPT',
   },
   description:
-    'Verstecke geheime Texte im Matrix-Code: AES-256-GCM verschlüsselt, unsichtbar in Emojis – unknackbar für KI & Interception. Zero-Knowledge, PBKDF2 250k, Variation Selectors Steganographie.',
+    'Verstecke geheime Texte im Matrix-Code: AES-256-GCM verschlüsselt, unsichtbar in Emojis – unknackbar für KI & Interception. Zero-Knowledge, PBKDF2 250k, Zero-Width Steganographie (WhatsApp-sicher).',
   keywords: [
     'emoji encoder',
     'emoji decoder',
@@ -90,7 +90,7 @@ export default function RootLayout({
               name: 'EMOJI_CRYPT',
               url: siteUrl,
               description:
-                'Zero-Knowledge Emoji Steganographie mit AES-256-GCM, PBKDF2 250k und Variation Selectors.',
+                'Zero-Knowledge Emoji Steganographie mit AES-256-GCM, PBKDF2 250k und Zero-Width (WhatsApp-sicher).',
               applicationCategory: 'SecurityApplication',
               operatingSystem: 'Web',
               offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },

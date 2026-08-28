@@ -31,15 +31,15 @@
   <img src="https://img.shields.io/badge/AES--256--GCM-011a0f?style=flat-square&logo=letsencrypt&logoColor=00ff41&labelColor=010805" alt="AES-256-GCM"/>
   <img src="https://img.shields.io/badge/PBKDF2_250K-011a0f?style=flat-square&logo=letsencrypt&logoColor=00ff41&labelColor=010805" alt="PBKDF2 250K"/>
   <img src="https://img.shields.io/badge/ZERO--KNOWLEDGE-011a0f?style=flat-square&logo=shield&logoColor=00ff41&labelColor=010805" alt="Zero Knowledge"/>
-  <img src="https://img.shields.io/badge/VS_STEGANO-011a0f?style=flat-square&logo=code&logoColor=00ff41&labelColor=010805" alt="VS Stegano"/>
+  <img src="https://img.shields.io/badge/ZW_STEGANO-011a0f?style=flat-square&logo=code&logoColor=00ff41&labelColor=010805" alt="ZW Stegano"/>
 </p>
 
 ```
 ┌─[ SYSTEM ]──────────────────────────────────────────────┐
 │  >_ PAYLOAD wird lokal im Browser verschlüsselt         │
-│  >_ Variation Selectors U+FE00..U+E01EF → 1 Byte/Char   │
+│  >_ Zero-Width U+200B/C/D + U+2060 → 2 Bit/Char (4/Char = 1B) │
 │  >_ GCM Tag 128b • Salt 16B • IV 12B • Padding 64B      │
-│  >_ Für KI & Server nur Rauschen █                      │
+│  >_ Für KI & Server nur Rauschen █ • WhatsApp-sicher    │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -180,7 +180,7 @@ iv   = crypto.getRandomValues(12) // 12B NIST
 key  = deriveKey(passphrase, salt, 250000) // PBKDF2 SHA-256
 padded = padPlaintext(text) // 64B-Blöcke mit Zufalls-Padding
 cipher = AES-GCM-Encrypt(key, iv, padded) // + Auth Tag
-payload = [header, salt, iv, cipher] → Variation Selectors
+payload = [header, salt, iv, cipher] → Zero-Width (4 Chars/Byte)
 ```
 
 **Entropie:** Passwort-Stärke wird live in Bits + Crack-Time angezeigt. **Tipp:** ≥16 Zeichen, gemischt (Groß/Klein/Zahl/Sonderzeichen) → `Sehr stark`.

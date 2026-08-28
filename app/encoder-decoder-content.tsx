@@ -279,7 +279,7 @@ export function Base64EncoderDecoderContent() {
         <p className="font-mono text-[11px] leading-relaxed text-[#7ad68a]">
           <span className="text-[#00ff41]">&gt;_</span> Payload wird{" "}
           <span className="text-[#eaffea]">lokal im Browser</span> verschlüsselt
-          &amp; in Variation Selectors injiziert.
+          &amp; in Zero-Width Zeichen injiziert (WhatsApp-sicher).
           <span className="hidden sm:inline">
             {" "}
             Ohne Schlüssel ist der Datenstrom reines Rauschen — unlesbar für
@@ -561,7 +561,7 @@ export function Base64EncoderDecoderContent() {
                   <Terminal className="w-3 h-3" /> OUTPUT_STREAM
                 </span>
                 <span className="hidden sm:inline-flex items-center gap-1">
-                  VS_INJECTED{" "}
+                  ZW_INJECTED{" "}
                   <span
                     className={`w-2 h-2 rounded-full ${encodedOutput ? "bg-[#00ff41] shadow-[0_0_6px_#00ff41] animate-pulse" : "bg-[#333]"}`}
                   />
@@ -1098,7 +1098,7 @@ export function Base64EncoderDecoderContent() {
         <span className="opacity-30">|</span>
         <span>crypto: WebCrypto Subtle</span>
         <span className="opacity-30">|</span>
-        <span>stego: Variation Selectors U+FE00..E01EF</span>
+        <span>stego: Zero-Width U+200B/C/D + U+2060 (4×/Byte)</span>
         <span className="hidden sm:inline opacity-30">|</span>
         <span className="hidden sm:inline">mode: ZERO_KNOWLEDGE</span>
       </div>

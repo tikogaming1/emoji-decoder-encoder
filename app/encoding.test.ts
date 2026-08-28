@@ -144,7 +144,13 @@ describe('Crypto Emoji Encoder / Decoder', () => {
     const chars = Array.from(encoded)
 
     const lastChar = chars[chars.length - 1]
-    const tamperedCodePoint = lastChar.codePointAt(0)! === 0xfe01 ? 0xfe02 : 0xfe01
+    const cp = lastChar.codePointAt(0)!
+    let tamperedCodePoint: number
+    if (cp === 0x200b) tamperedCodePoint = 0x200c
+    else if (cp === 0x200c) tamperedCodePoint = 0x200b
+    else if (cp === 0x200d) tamperedCodePoint = 0x2060
+    else if (cp === 0x2060) tamperedCodePoint = 0x200d
+    else tamperedCodePoint = cp === 0xfe01 ? 0xfe02 : 0xfe01
     chars[chars.length - 1] = String.fromCodePoint(tamperedCodePoint)
     const tampered = chars.join('')
 
