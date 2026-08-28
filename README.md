@@ -2,17 +2,13 @@
 
 <div align="center">
 
-<!-- Neon-Glow Banner: funktioniert auf GitHub als echtes Bild. Falls es als Link angezeigt wurde, lag es am falschen Pfad (matrix.svg statt matrix-hacker.svg) + ungültigem SVG (Text nach </svg>). Jetzt: korrektes <img> mit relativem Pfad. -->
-<p>
-  <img src="./matrix-hacker.svg" width="820" alt="EMOJI_CRYPT Neon Banner — Matrix Hacker Glow"/>
-</p>
-
-<!-- Fallback reiner Text (funktioniert immer, auch ohne SVG): -->
-<pre style="display:none">Fallback ASCII falls Bild blockiert:</pre>
 ```text
  ███████╗███╗   ███╗  ██████╗     ██╗ ██╗    ██████╗██████╗ ██╗   ██╗ ██████╗ ████████╗
  ██╔════╝████╗ ████║ ██╔═══██╗    ██║ ██║   ██╔════╝██╔══██╗ ╚██╗██╔╝██╔══██╗╚══██╔══╝
- ██║     ██████╔╝  ╚████╔╝ ██████╔╝   ██║     ███████╗██║  ██║  ██║   ██║        ██║
+ █████╗  ██╔████╔██║ ██║   ██║    ██║ ██║   ██║     ██████╔╝  ╚████╔╝ ██████╔╝   ██║
+ ██╔══╝  ██║╚██╔╝██║ ██║   ██║    ██║ ██║   ██║     ██╔══██╗   ╚██╔╝  ██╔═══╝    ██║
+ ███████╗██║ ╚═╝ ██║ ╚██████╔╝    ██║ ██║   ╚██████╗██║  ██║    ██║   ██║        ██║
+ ╚══════╝╚═╝     ╚═╝  ╚═════╝     ╚═╝ ╚═╝    ╚═════╝╚═╝  ╚═╝    ╚═╝   ╚═╝        ╚═╝
               // STEGANOGRAPHY PROTOCOL v3.0  —  AES-256-GCM // PBKDF2 250k
                     ZERO-KNOWLEDGE  •  VARIATION SELECTORS  •  MATRIX
 ```
