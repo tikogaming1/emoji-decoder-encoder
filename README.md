@@ -22,7 +22,7 @@
   <img src="https://img.shields.io/badge/NEXT.JS_14.2.35-011a0f?style=flat-square&logo=nextdotjs&logoColor=00ff41&labelColor=010805" alt="Next.js"/>
   <img src="https://img.shields.io/badge/TYPESCRIPT-011a0f?style=flat-square&logo=typescript&logoColor=00ff41&labelColor=010805" alt="TypeScript"/>
   <img src="https://img.shields.io/badge/NODE-%3E%3D18-011a0f?style=flat-square&logo=nodedotjs&logoColor=00ff41&labelColor=010805" alt="Node"/>
-  <img src="https://img.shields.io/badge/LICENSE-MIT-011a0f?style=flat-square&labelColor=010805&color=00ff41" alt="License"/>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/LICENSE-MIT-011a0f?style=flat-square&logo=opensourceinitiative&logoColor=00ff41&labelColor=010805" alt="License"/></a>
 </p>
 
 <p align="center">
