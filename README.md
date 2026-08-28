@@ -19,17 +19,17 @@
 *WAKE UP, NEO_ • THE MATRIX HAS YOU • FOLLOW THE WHITE RABBIT*
 
 <p align="center">
-  <img src="https://img.shields.io/badge/NEXT.JS_14.2.35-00ff41?style=for-the-badge&logo=nextdotjs&logoColor=black&labelColor=010805" alt="Next.js"/>
-  <img src="https://img.shields.io/badge/TYPESCRIPT-00ff41?style=for-the-badge&logo=typescript&logoColor=black&labelColor=010805" alt="TypeScript"/>
-  <img src="https://img.shields.io/badge/NODE-%3E%3D18-00ff41?style=for-the-badge&logo=nodedotjs&logoColor=black&labelColor=010805" alt="Node"/>
-  <img src="https://img.shields.io/badge/LICENSE-MIT-00ff41?style=for-the-badge&labelColor=010805" alt="License"/>
+  <img src="https://img.shields.io/badge/NEXT.JS_14.2.35-011a0f?style=flat-square&logo=nextdotjs&logoColor=00ff41&labelColor=010805" alt="Next.js"/>
+  <img src="https://img.shields.io/badge/TYPESCRIPT-011a0f?style=flat-square&logo=typescript&logoColor=00ff41&labelColor=010805" alt="TypeScript"/>
+  <img src="https://img.shields.io/badge/NODE-%3E%3D18-011a0f?style=flat-square&logo=nodedotjs&logoColor=00ff41&labelColor=010805" alt="Node"/>
+  <img src="https://img.shields.io/badge/LICENSE-MIT-011a0f?style=flat-square&labelColor=010805&color=00ff41" alt="License"/>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/AES--256--GCM-00ff41?style=for-the-badge&logo=letsencrypt&logoColor=black&labelColor=010805" alt="AES-256-GCM"/>
-  <img src="https://img.shields.io/badge/PBKDF2_250K-00ff41?style=for-the-badge&logo=letsencrypt&logoColor=black&labelColor=010805" alt="PBKDF2 250K"/>
-  <img src="https://img.shields.io/badge/ZERO--KNOWLEDGE-00ff41?style=for-the-badge&logo=shield&logoColor=black&labelColor=010805" alt="Zero Knowledge"/>
-  <img src="https://img.shields.io/badge/VS_STEGANO-00ff41?style=for-the-badge&logo=code&logoColor=black&labelColor=010805" alt="VS Stegano"/>
+  <img src="https://img.shields.io/badge/AES--256--GCM-011a0f?style=flat-square&logo=letsencrypt&logoColor=00ff41&labelColor=010805" alt="AES-256-GCM"/>
+  <img src="https://img.shields.io/badge/PBKDF2_250K-011a0f?style=flat-square&logo=letsencrypt&logoColor=00ff41&labelColor=010805" alt="PBKDF2 250K"/>
+  <img src="https://img.shields.io/badge/ZERO--KNOWLEDGE-011a0f?style=flat-square&logo=shield&logoColor=00ff41&labelColor=010805" alt="Zero Knowledge"/>
+  <img src="https://img.shields.io/badge/VS_STEGANO-011a0f?style=flat-square&logo=code&logoColor=00ff41&labelColor=010805" alt="VS Stegano"/>
 </p>
 
 ```
