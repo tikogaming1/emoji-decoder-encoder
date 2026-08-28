@@ -31,12 +31,12 @@
 </p>
 
 ```
-┌─[ SYSTEM ]─────────────────────────────────────────────────┐
-│  >_ PAYLOAD wird lokal im Browser verschlüsselt              │
+┌─[ SYSTEM ]────────────────────────────────────────────────────┐
+│  >_ PAYLOAD wird lokal im Browser verschlüsselt               │
 │  >_ Variation Selectors U+FE00..U+E01EF → 1 Byte/Char         │
 │  >_ GCM Tag 128b • Salt 16B • IV 12B • Padding 64B            │
 │  >_ Für KI & Server nur Rauschen █                            │
-└──────────────────────────────────────────────────────────────┘
+└───────────────────────────────────────────────────────────────┘
 ```
 
 </div>
@@ -50,10 +50,9 @@
 
 </div>
 
-> **Ein sicheres Web- & CLI-Tool, um vertrauliche Nachrichten unsichtbar in Emojis zu verstecken.** Basiert auf der Idee von [`paulgb/emoji-encoder`](https://github.com/paulgb/emoji-encoder) — aber komplett neu gebaut mit **echter militärischer Kryptographie** und **Matrix-Hacker Design** (`Next 14.2.35` / `React 18` / `Tailwind` / `Web Crypto`).
+> **Ein sicheres Web- & CLI-Tool, um vertrauliche Nachrichten unsichtbar in Emojis zu verstecken.** Basiert auf der Idee von [`paulgb/emoji-encoder`](https://github.com/paulgb/emoji-encoder) — aber komplett neu gebaut mit **echter militärischer Kryptographie** (`Next 14.2.35` / `React 18` / `Tailwind` / `Web Crypto`).
 
-**Live:** **https://emoji-decoder-encoder.vercel.app** — `vercel --prod` ready, `Speed Insights` + `Sitemap` + `robots.txt` inklusive.
-
+**Live:** **https://emoji-decoder-encoder.vercel.app**
 ---
 
 ## 🧬 _Was ist neu? — 3D Matrix Look_
@@ -194,26 +193,6 @@ payload = [0xEE, 0x03, 0x02, salt(16), iv(12), cipher...] → VS-Encode
 
 ---
 
-## 🌐 _Deployment_
-
-**Vercel 1-Klick:** GitHub → [Vercel New Project](https://vercel.com/new) → Import `tikogaming1/emoji-decoder-encoder` → Deploy. Keine Env Vars nötig (Zero-Knowledge).
-
-**Manuell:**
-```bash
-vercel --prod --yes
-# alias https://emoji-decoder-encoder.vercel.app
-```
-
-**SEO bereits drin:** `app/robots.ts` `Allow:/` + `app/sitemap.ts` `priority:1 weekly`, `app/layout.tsx:6` `metadataBase`, `openGraph`, `twitter`, `verification.google: 28WN...` (Search Console bestätigt), `robots index,follow`. Nach Push → Search Console → Sitemaps `.../sitemap.xml` → URL-Prüfung → Indexierung.
-
----
-
-## 📊 _Speed Insights_
-
-`@vercel/speed-insights@2.0.0` in `app/layout.tsx:27` `<SpeedInsights />` (Next App). Routen `/_vercel/speed-insights/script.js` + `fa56cca.../script.js` → 200 OK. Dashboard: Filter `Production` / `All` / `Last 7 days`, braucht 10-30min + echte Besuche (localhost zählt nicht) bis RES erscheint.
-
----
-
 ## 🧪 _Tests_
 
 ```bash
@@ -229,22 +208,13 @@ npm test
 
 ---
 
-## 📜 _Sicherheit für Public Repo_
-
-* `.gitignore:20` `.env*` blockiert `.env.local` (`VERCEL_OIDC_TOKEN` 1h) — `git check-ignore` 3 Treffer
-* `.vercel` ignoriert, `node_modules/.next` ignoriert
-* `git ls-files` 84 tracked, kein Secret
-* Bleib privat bis Release, dann GitHub → Settings → Change visibility → Public
-
----
-
 <div align="center">
 
 ```
-┌─────────────────────────────────────────────────────────┐
+┌───────────────────────────────────────────────────────────────┐
 │  >_ WAKE UP, NEO_ • THE MATRIX HAS YOU • FOLLOW WHITE RABBIT  │
-│  >_ EMOJI_CRYPT // AES-256-GCM — ZERO-KNOWLEDGE VAULT     │
-└─────────────────────────────────────────────────────────┘
+│  >_ EMOJI_CRYPT // AES-256-GCM — ZERO-KNOWLEDGE VAULT         │
+└───────────────────────────────────────────────────────────────┘
 ```
 
 **Built with `00ff41` • PRs welcome • MIT**
