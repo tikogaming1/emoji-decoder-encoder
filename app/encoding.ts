@@ -195,6 +195,13 @@ export async function encode(
   if (!text) {
     return carrier;
   }
+  // Input-Größe begrenzen — Schutz vor DoS durch riesige Texte (PBKDF2 ist CPU-teuer)
+  if (text.length > 4000) {
+    throw new Error("Text zu lang — maximal 4000 Zeichen (Schutz vor Überlastung).");
+  }
+  if (carrier && Array.from(carrier).length > 8) {
+    throw new Error("Träger zu lang — maximal 8 Zeichen.");
+  }
 
   const effectiveKey = (options.password || options.vaultKey || "").trim();
   if (!effectiveKey) {

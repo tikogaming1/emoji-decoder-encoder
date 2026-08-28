@@ -93,56 +93,75 @@ export function Base64EncoderDecoderContent() {
     useSavedVaultKey && savedVaultKey ? savedVaultKey : encodePassword;
   const passwordEntropy = calculatePasswordEntropy(encodePassword);
 
-  // Perform Encoding
+  // Perform Encoding — debounced (320ms) gegen PBKDF2-DoS bei jedem Tastendruck
   useEffect(() => {
-    if (!encodeInputText.trim()) {
-      setEncodedOutput("");
-      setEncodeError("");
-      return;
-    }
-
-    if (!activeKeyForEncoding.trim()) {
-      setEncodedOutput("");
-      setEncodeError(
-        ">> ERR: KEY_MATERIAL_REQUIRED // Passwort oder Tresor-Key erforderlich.",
-      );
-      return;
-    }
-
-    setEncodeError("");
-    startEncodingTransition(async () => {
-      try {
-        const result = await encode(effectiveCarrier, encodeInputText, {
-          password: activeKeyForEncoding.trim(),
-        });
-        setEncodedOutput(result);
-      } catch (err: any) {
-        setEncodeError(err?.message || "Fehler beim Verschlüsseln.");
+    const timer = setTimeout(() => {
+      if (!encodeInputText.trim()) {
+        setEncodedOutput("");
+        setEncodeError("");
+        return;
       }
-    });
+
+      if (!activeKeyForEncoding.trim()) {
+        setEncodedOutput("");
+        setEncodeError(
+          ">> ERR: KEY_MATERIAL_REQUIRED // Passwort oder Tresor-Key erforderlich.",
+        );
+        return;
+      }
+
+      if (encodeInputText.length > 4000) {
+        setEncodedOutput("");
+        setEncodeError(">> ERR: INPUT_TOO_LARGE // Max 4000 Zeichen.");
+        return;
+      }
+
+      setEncodeError("");
+      startEncodingTransition(async () => {
+        try {
+          const result = await encode(effectiveCarrier, encodeInputText, {
+            password: activeKeyForEncoding.trim(),
+          });
+          setEncodedOutput(result);
+        } catch (err: any) {
+          setEncodeError(err?.message || "Fehler beim Verschlüsseln.");
+        }
+      });
+    }, 320);
+    return () => clearTimeout(timer);
   }, [encodeInputText, effectiveCarrier, activeKeyForEncoding]);
 
-  // Perform Decoding
+  // Perform Decoding — debounced 300ms + Größen-Limit gegen DoS
   useEffect(() => {
-    if (!decodeInputText.trim()) {
-      setDecodeResult(null);
-      return;
-    }
-
-    startDecodingTransition(async () => {
-      try {
-        const result = await decode(decodeInputText, {
-          password: decodePassword.trim(),
-          vaultKey: savedVaultKey.trim(),
-        });
-        setDecodeResult(result);
-      } catch (err) {
+    const timer = setTimeout(() => {
+      if (!decodeInputText.trim()) {
+        setDecodeResult(null);
+        return;
+      }
+      if (decodeInputText.length > 20000) {
         setDecodeResult({
           status: "error",
-          error: "Unerwarteter Entschlüsselungsfehler.",
+          error: "Eingabe zu groß — max 20000 Zeichen.",
         });
+        return;
       }
-    });
+
+      startDecodingTransition(async () => {
+        try {
+          const result = await decode(decodeInputText, {
+            password: decodePassword.trim(),
+            vaultKey: savedVaultKey.trim(),
+          });
+          setDecodeResult(result);
+        } catch (err) {
+          setDecodeResult({
+            status: "error",
+            error: "Unerwarteter Entschlüsselungsfehler.",
+          });
+        }
+      });
+    }, 300);
+    return () => clearTimeout(timer);
   }, [decodeInputText, decodePassword, savedVaultKey]);
 
   // Inspector analysis
@@ -353,14 +372,23 @@ export function Base64EncoderDecoderContent() {
                 <span className="text-[#00ff41]/50">01 // </span> PAYLOAD_INPUT
                 <span className="w-1 h-3 bg-[#00ff41] animate-pulse hidden sm:inline-block" />
               </label>
-              <span className="text-[#00ff41]/50 tracking-wider border border-[#00ff41]/15 px-1.5 py-0.5 bg-[#001208]">
-                {encodeInputText.length} BYTES
+              <span
+                className={`tracking-wider border px-1.5 py-0.5 bg-[#001208] text-xs font-mono ${
+                  encodeInputText.length > 3500
+                    ? "text-[#ffbd2e] border-[#ffbd2e]/30"
+                    : encodeInputText.length > 3800
+                      ? "text-[#ff3b30] border-[#ff3b30]/30"
+                      : "text-[#00ff41]/50 border-[#00ff41]/15"
+                }`}
+              >
+                {encodeInputText.length} / 4000
               </span>
             </div>
             <Textarea
               id="encode-input"
-              placeholder=">_ Geheimen Text eingeben... [AES-256-GCM + RANDOM PADDING]"
+              placeholder=">_ Geheimen Text eingeben... [AES-256-GCM + RANDOM PADDING] — max 4000 Zeichen"
               value={encodeInputText}
+              maxLength={4000}
               onChange={(e) => setEncodeInputText(e.target.value)}
               className="min-h-[96px] font-mono resize-y bg-[#010805] border-[#00ff41]/20 text-[#c8ffc8] placeholder:text-[#00ff41]/25 focus-visible:ring-[#00ff41]/30 focus-visible:border-[#00ff41]/40 matrix-border-glow text-sm"
             />
@@ -667,8 +695,9 @@ export function Base64EncoderDecoderContent() {
             </div>
             <Textarea
               id="decode-input"
-              placeholder=">_ Emoji mit Payload hier einfügen..."
+              placeholder=">_ Emoji mit Payload hier einfügen... — max 20000 Zeichen"
               value={decodeInputText}
+              maxLength={20000}
               onChange={(e) => setDecodeInputText(e.target.value)}
               className="min-h-[90px] font-mono resize-y bg-[#010805] border-[#00ff41]/20 text-[#c8ffc8] placeholder:text-[#00ff41]/25 focus-visible:ring-[#00ff41]/30 text-sm"
             />
