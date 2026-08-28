@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'de_DE',
     url: siteUrl,
-    title: 'EMOJI_CRYPT // MATRIX EDITION — AES-256-GCM',
+    title: 'EMOJI_CRYPT // AES-256-GCM',
     description:
       'Verstecke geheime Texte unsichtbar in Emojis — militärische AES-256-GCM Verschlüsselung, PBKDF2 250k, unknackbar für KI.',
     siteName: 'EMOJI_CRYPT',
