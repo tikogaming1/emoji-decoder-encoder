@@ -68,7 +68,7 @@ export default function EncoderDecoder() {
               </span>
               <span className="ml-1 text-[#00ff41] terminal-caret text-xl align-baseline" aria-hidden />
               <span className="block mt-1 text-[10px] sm:text-xs font-mono font-normal tracking-[0.18em] text-[#00ff41]/55">
-                MATRIX EDITION — ZERO-KNOWLEDGE VAULT
+                AES-256-GCM — ZERO-KNOWLEDGE VAULT
               </span>
             </CardTitle>
 

@@ -8,7 +8,7 @@ const siteUrl = 'https://emoji-decoder-encoder.vercel.app'
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'EMOJI_CRYPT // MATRIX EDITION — AES-256-GCM',
+    default: 'EMOJI_CRYPT // AES-256-GCM',
     template: '%s | EMOJI_CRYPT',
   },
   description:
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'EMOJI_CRYPT Matrix Edition — Emoji Steganographie mit AES-256-GCM',
+        alt: 'EMOJI_CRYPT — Emoji Steganographie mit AES-256-GCM',
       },
     ],
   },
@@ -88,7 +88,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebApplication',
-              name: 'EMOJI_CRYPT Matrix Edition',
+              name: 'EMOJI_CRYPT',
               url: siteUrl,
               description:
                 'Zero-Knowledge Emoji Steganographie mit AES-256-GCM, PBKDF2 250k und Variation Selectors.',
