@@ -120,12 +120,12 @@ export default function EncoderDecoder() {
           <span className="font-bold text-[#00ff41] matrix-glow">PADDING 64B</span>
           <span className="text-[#00ff41]/40 hidden sm:inline">|</span>
           <a
-            href="https://github.com/paulgb/emoji-encoder"
+            href="https://github.com/tikogaming1/emoji-decoder-encoder"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 font-bold text-[#00ff41] hover:text-[#eaffea] hover:matrix-glow-soft transition-colors border border-[#00ff41]/25 hover:border-[#00ff41]/50 bg-[#00260c]/50 hover:bg-[#00260c] px-2 py-0.5"
           >
-            <span>⟶ paulgb/emoji-encoder</span>
+            <span>⟶ tikogaming1/emoji-decoder-encoder</span>
           </a>
         </footer>
 
