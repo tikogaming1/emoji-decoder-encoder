@@ -708,48 +708,44 @@ export function Base64EncoderDecoderContent() {
             )}
           </div>
 
-          {/* Password Prompt */}
-          {(decodeResult?.status === "needs_password" ||
-            decodeResult?.status === "invalid_password" ||
-            decodePassword.length > 0) && (
-            <div className="p-3.5 rounded-sm border border-[#ffbd2e]/30 bg-[#1a1300]/60 space-y-2 matrix-border-glow">
-              <div className="flex items-center gap-1.5 text-xs font-mono font-bold tracking-widest text-[#ffbd2e]">
-                <Key className="w-4 h-4" />
-                <span>KEY_REQUIRED // PASSWORT ERFORDERLICH</span>
-                <span className="ml-auto w-2 h-2 bg-[#ffbd2e] animate-pulse" />
-              </div>
-              <p className="text-[11px] font-mono text-[#ffbd2e]/80 tracking-wide">
-                &gt; Dieses Emoji ist verschlüsselt. Schlüssel eingeben um zu
-                dekryptieren:
-              </p>
-              <div className="relative">
-                <Input
-                  type={showDecodePassword ? "text" : "password"}
-                  placeholder=">_ Passphrase..."
-                  value={decodePassword}
-                  onChange={(e) => setDecodePassword(e.target.value)}
-                  className="pr-10 text-xs sm:text-sm bg-[#010805] border-[#ffbd2e]/30 text-[#c8ffc8] placeholder:text-[#ffbd2e]/30 font-mono focus-visible:ring-[#ffbd2e]/30 h-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowDecodePassword(!showDecodePassword)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#ffbd2e]/60 hover:text-[#ffbd2e]"
-                >
-                  {showDecodePassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                </button>
-              </div>
+          {/* Password Prompt — immer sichtbar für Entschlüsselung */}
+          <div className="p-3.5 rounded-sm border border-[#ffbd2e]/30 bg-[#1a1300]/60 space-y-2 matrix-border-glow">
+            <div className="flex items-center gap-1.5 text-xs font-mono font-bold tracking-widest text-[#ffbd2e]">
+              <Key className="w-4 h-4" />
+              <span>02 // DECRYPT_KEY // PASSWORT</span>
+              <span className="ml-auto w-2 h-2 bg-[#ffbd2e] animate-pulse" />
             </div>
-          )}
+            <p className="text-[11px] font-mono text-[#ffbd2e]/80 tracking-wide">
+              &gt; Passwort eingeben um Emoji zu entschlüsseln (leer lassen für
+              unverschlüsselte Emojis):
+            </p>
+            <div className="relative">
+              <Input
+                type={showDecodePassword ? "text" : "password"}
+                placeholder=">_ Passphrase..."
+                value={decodePassword}
+                onChange={(e) => setDecodePassword(e.target.value)}
+                className="pr-10 text-xs sm:text-sm bg-[#010805] border-[#ffbd2e]/30 text-[#c8ffc8] placeholder:text-[#ffbd2e]/30 font-mono focus-visible:ring-[#ffbd2e]/30 h-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowDecodePassword(!showDecodePassword)}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#ffbd2e]/60 hover:text-[#ffbd2e]"
+              >
+                {showDecodePassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
+            </div>
+          </div>
 
           {/* Result Box */}
           <div className="space-y-2 pt-1">
             <div className="flex items-center justify-between text-xs font-mono">
               <span className="font-bold tracking-widest text-[#00ff41] flex items-center gap-2">
-                <span className="text-[#00ff41]/50">02 // </span>{" "}
+                <span className="text-[#00ff41]/50">03 // </span>{" "}
                 DECRYPTED_OUTPUT
               </span>
               {decodeResult?.status === "success" && (
