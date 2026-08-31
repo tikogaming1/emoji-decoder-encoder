@@ -1,4 +1,4 @@
-# 🔒 EMOJI_CRYPT — AES-256-GCM
+# 🔒 NP_EMOJI_CRYPT — AES-256-GCM
 
 <div align="center">
 
