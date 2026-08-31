@@ -201,7 +201,9 @@ npm start
 
 **SEO:** `app/robots.ts` + `app/sitemap.ts` nutzen `NEXT_PUBLIC_SITE_URL` (default `http://localhost:3000`). Für eigene Domain: `.env` mit `NEXT_PUBLIC_SITE_URL=https://deine-domain.de` setzen, dann erscheint sie in `robots.txt`/`sitemap.xml` und Meta `canonical`.
 
+
 ---
+
 
 ## 🧪 _Tests_
 
@@ -215,7 +217,7 @@ npm test
 # ✓ GCM Tamper detection
 # 9 passed
 ```
-
+---
 
 <div align="center">
 
