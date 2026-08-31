@@ -15,7 +15,7 @@
                     ZERO-KNOWLEDGE  •  VARIATION SELECTORS  •  MATRIX
 ```
 
-### EMOJI_CRYPT // AES-256-GCM
+### NP_EMOJI_CRYPT // AES-256-GCM
 **[▶ Live Demo → emoji-decoder-encoder.vercel.app](https://emoji-decoder-encoder.vercel.app)**
 
 *WAKE UP, NEO • THE MATRIX HAS YOU • FOLLOW THE WHITE RABBIT*
