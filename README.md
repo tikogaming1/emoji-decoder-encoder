@@ -35,12 +35,12 @@
 </p>
 
 ```
-┌─[ SYSTEM ]────────────────────────────────────────────────────┐
-│  >_ PAYLOAD wird lokal im Browser verschlüsselt               │
-│  >_ Zero-Width U+200B/C/D + U+2060 → 2 Bit/Char (4/Char = 1B) │
-│  >_ GCM Tag 128b • Salt 16B • IV 12B • Padding 64B            │
-│  >_ Für KI & Server nur Rauschen █ • WhatsApp-sicher          │
-└───────────────────────────────────────────────────────────────┘
+┌─[ SYSTEM ]─────────────────────────────────────────────────────────────┐
+│  >_ PAYLOAD wird lokal im Browser verschlüsselt                        │
+│  >_ Zero-Width U+200B/C/D + U+2060 → 2 Bit/Char (4/Char = 1B)          │
+│  >_ GCM Tag 128b • Salt 16B • IV 12B • Padding 64B • WhatsApp-sicher   │
+│  >_ Für KI & Server nur Rauschen █                                     │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
 </div>
