@@ -216,15 +216,6 @@ npm test
 # 9 passed
 ```
 
----
-
-## 📜 _Git & Secrets_
-
-* `.env*` + `.vercel/` sind in `.gitignore` — `VERCEL_OIDC_TOKEN` (1h) nie committen
-* `git add .` respektiert Ignore, `git check-ignore -v .env.local` → Treffer
-* `git push` → bleibt privat bis du in GitHub Settings → Change visibility → Public machst
-
----
 
 <div align="center">
 
