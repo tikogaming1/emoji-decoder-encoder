@@ -624,7 +624,7 @@ export function Base64EncoderDecoderContent() {
                 {encodedOutput && (
                   <Button
                     type="button"
-                    onClick={() => handleCopy(encodedOutput, true)}
+                    onClick={() => handleCopy(`_${encodedOutput}_`, true)}
                     className="bg-[#00ff41] hover:bg-[#00ff41]/90 text-black font-mono font-bold tracking-widest text-xs border border-[#00ff41] shadow-[0_0_14px_rgba(0,255,65,0.45)] flex items-center gap-1.5 shrink-0"
                     size="sm"
                   >
