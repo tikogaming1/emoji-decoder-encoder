@@ -18,7 +18,7 @@
 ### EMOJI_CRYPT // AES-256-GCM
 **[▶ Live Demo → emoji-decoder-encoder.vercel.app](https://emoji-decoder-encoder.vercel.app)**
 
-*WAKE UP, NEO_ • THE MATRIX HAS YOU • FOLLOW THE WHITE RABBIT*
+*WAKE UP, NEO • THE MATRIX HAS YOU • FOLLOW THE WHITE RABBIT*
 
 <p align="center">
   <img src="https://img.shields.io/badge/NEXT.JS_14.2.35-011a0f?style=flat-square&logo=nextdotjs&logoColor=00ff41&labelColor=010805" alt="Next.js"/>
