@@ -7,8 +7,8 @@ const siteUrl = 'http://localhost:3000'
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'EMOJI_CRYPT // AES-256-GCM',
-    template: '%s | EMOJI_CRYPT',
+    default: 'NP_EMOJI_CRYPT // AES-256-GCM',
+    template: '%s | NP_EMOJI_CRYPT',
   },
   description:
     'Verstecke geheime Texte im Matrix-Code: AES-256-GCM verschlüsselt, unsichtbar in Emojis – unknackbar für KI & Interception. Zero-Knowledge, PBKDF2 250k, Zero-Width Steganographie (WhatsApp-sicher).',
@@ -44,10 +44,10 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'de_DE',
     url: siteUrl,
-    title: 'EMOJI_CRYPT // AES-256-GCM',
+    title: 'NP_EMOJI_CRYPT // AES-256-GCM',
     description:
       'Verstecke geheime Texte unsichtbar in Emojis — militärische AES-256-GCM Verschlüsselung, PBKDF2 250k, unknackbar für KI.',
-    siteName: 'EMOJI_CRYPT',
+    siteName: 'NP_EMOJI_CRYPT',
     images: [
       {
         url: '/og-image.png',
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'EMOJI_CRYPT // AES-256-GCM',
+    title: 'NP_EMOJI_CRYPT // AES-256-GCM',
     description: 'Verstecke geheime Texte unsichtbar in Emojis — AES-256-GCM + PBKDF2 250k. Zero-Knowledge.',
     images: ['/og-image.png'],
   },
@@ -87,7 +87,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebApplication',
-              name: 'EMOJI_CRYPT',
+              name: 'NP_EMOJI_CRYPT',
               url: siteUrl,
               description:
                 'Zero-Knowledge Emoji Steganographie mit AES-256-GCM, PBKDF2 250k und Zero-Width (WhatsApp-sicher).',

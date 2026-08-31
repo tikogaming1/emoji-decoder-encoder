@@ -64,7 +64,7 @@ export default function EncoderDecoder() {
                 {"//"} STEGANOGRAPHY PROTOCOL v3.0
               </span>
               <span className="text-2xl sm:text-[2rem] font-black tracking-tight text-[#eaffea] matrix-glow">
-                EMOJI<span className="text-[#00ff41]">_</span>CRYPT
+                NP_EMOJI<span className="text-[#00ff41]">_</span>CRYPT
               </span>
               <span className="ml-1 text-[#00ff41] terminal-caret text-xl align-baseline" aria-hidden />
               <span className="block mt-1 text-[10px] sm:text-xs font-mono font-normal tracking-[0.18em] text-[#00ff41]/55">
